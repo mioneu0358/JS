@@ -41,6 +41,41 @@ class BoardAccess:
             }
         return result
 
+
+    def find_all_post(self,category_id):
+        """
+        모든 Post 반환
+        """
+        self.db.connect()
+
+        result = self.db.fetch_query("""
+            SELECT post_id,
+                   title,
+                   content
+                   datetime(crt, 'localdate'),
+                   view
+                   row_number() over(ORDER BY crt ASC)      <--! 행 번호를 생성일의 오름차순으로 가져온다 -->
+            FROM Post
+            WHERE category_id = ?
+            ORDER BY crt DESC
+        """,category_id)
+
+        self.db.disconnect()
+
+        if len(result) == 0:
+            return []
+
+        for i in range(len(result)):
+            result[i] = {
+                'post_id':  result[i][0],
+                'title':    result[i][1],
+                'content':  result[i][2],
+                'crt':      result[i][3],
+                'view':     result[i][4],
+                'no'  :     result[i][5]
+            }
+        return result
+
     def find_category_by_id(self, category_id):
         """
         ID값을 통해 카테고리를 찾는다
@@ -80,5 +115,18 @@ class BoardAccess:
             INSERT INTO Category(title) 
             VALUES(?)
         """, title)
+
+        self.db.disconnect()
+
+    def create_post(self,category_id, title,content):
+        """
+        새로운 개시글 생성
+        """
+        self.db.connect()
+
+        self.db.execute_query("""
+            INSERT INTO Post(category_id, title, content)
+            VALUES(?,?,?)
+        """, category_id,title,content)
 
         self.db.disconnect()

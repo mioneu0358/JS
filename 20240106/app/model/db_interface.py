@@ -82,6 +82,7 @@ def initialize_once():
             content     TEXT NOT NULL,                       -- 내용 (NULL 비허용)
             crt         DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 생성일자 (기본값은 현재시간)
             amd         DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 수정일자 (기본값은 현재시간)
+            view        INTEGER DEFAULT 0,                   -- 조회수(기본값 0)
             CONSTRAINT category_fk FOREIGN KEY (category_id) -- 외래키 제약조건 정의(category_fk)
             REFERENCES Category(category_id)                 -- (Post.category_id -> Category.category_id)
         )

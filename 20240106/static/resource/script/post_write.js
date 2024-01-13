@@ -7,6 +7,18 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 
     loadCategoryDropdown();
+    // Submit 버튼 클릭시 동작
+    let submit = document.querySelector("#submit");
+    submit.addEventListener('click',function() {
+        submit.setAttribute('disabled','');
+        // 버튼을 누른  후 일단 버튼 비활성화
+        submitPost().finally(function() {
+            // 요청이 완전히 끝났을 때 다시 활성화
+            submit.removeAttribute('disabled');
+        });
+        
+        
+    });
 });
 
 /**
@@ -28,4 +40,38 @@ async function loadCategoryDropdown() {
 
         dropdown.append(option);
     }
+}
+
+/**
+* 게시글 전송
+*/
+
+async function submitPost(){
+    let category_id = document.querySelector("#category").value;
+    let title       = document.querySelector("#title").value;
+    let content     = quill.root.innerText;
+
+    try{
+        let response    = await fetch('/    board-api/post', {
+            method: 'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body :  JSON.stringify({
+                category_id : category_id,
+                title       : title,
+                content     : content
+            })
+        });
+
+        let result = await response.json();
+        location.href='/board';     // 입력 다 했으니 /board로 돌아가기
+
+    }
+    catch (e){
+        alert('에러 발생. 관리자에게 문의하시오.');
+    }
+
+   
+
 }

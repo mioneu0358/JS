@@ -15,3 +15,20 @@ def category_list():
 
 
 
+@board_bp.route('/post',methods=["POST"])
+def post_write():
+    param = request.get_json()
+    board_service.add_post(     # 요청 Body를 Json 형식으로 해석
+        param['category_id'],
+        param['title'],
+        param["content"]
+    )
+    return jsonify({'state': 'success'})
+
+@board_bp.route('/posts')
+def post_list():
+    # category_id = request.get_json()['category_id']
+    category_id = 1
+    postList = board_service.get_posts(category_id)
+    print(f"posts: {postList}")
+    return jsonify(postList)
